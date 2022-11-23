@@ -268,28 +268,31 @@ router.delete(
 );
 
 
-router.post("/reports", authenticateJwt, upload.array("images", 12), async (req, res) => {
-  const { title, publicationDate } = req.body;
-  const urls = [];
-  const files = req.files;
-  for (const file of files) {
-    const { path } = file;
-    const newPath = await cloudinaryImageUploadMethod(path);
-    urls.push(newPath);
-  }
-
-  const report = new Reports({
+router.post("/reports", authenticateJwt, upload.single("report"), async (req, res) => {
+  const {
     title,
     publicationDate,
-    uploadedDocumentFiles: urls.map((url) => url.res),
-  });
-
-  await report.save();
-
-  res.status(200).json({
-    successMessage: "New report was sucessfully saved to database",
-  });
+  } = req.body;
+  try {
+    const upload_response = await cloudinary.uploader.upload(req.file.path);
+    if (upload_response) {
+      const data = {
+       title,
+       publicationDate,
+       uploadedDocumentFile: upload_response.url,
+        cloudinary_id: upload_response.public_id,
+      };
+      let report = new Reports(data);
+      await report.save();
+      res.status(200).json({
+        successMessage: "New report was sucessfully saved to database",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
+  }
 });
+
 
 router.get("/reports", async (req, res) => {
   try {
@@ -322,29 +325,33 @@ router.delete(
   }
 );
 
-router.post("/archives", authenticateJwt, upload.array("archives", 12), async (req, res) => {
-  const urls = [];
-  const files = req.files;
-  for (const file of files) {
-    const { path } = file;
-    const newPath = await cloudinaryImageUploadMethod(path);
-    urls.push(newPath);
+router.post("/archives", authenticateJwt, upload.single("archive"), async (req, res) => {
+  const {
+    title,
+    publicationDate,
+    description
+  } = req.body;
+  try {
+    const upload_response = await cloudinary.uploader.upload(req.file.path);
+    if (upload_response) {
+      const data = {
+       title,
+       publicationDate,
+       description,
+       uploadedDocumentFile: upload_response.url,
+        cloudinary_id: upload_response.public_id,
+      };
+      let archive = new Archives(data);
+      await archive.save();
+      res.status(200).json({
+        successMessage: "New Archive was sucessfully saved to database",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
   }
-
-
-  const archives = new Archives({
-    title: req.body.title,
-    publicationDate: req.body.publicationDate,
-    description: req.body.description,
-    uploadedDocumentFiles: urls.map((url) => url.res),
-  });
-
-  await archives.save();
-
-  res.status(200).json({
-    successMessage: "New Archive was sucessfully saved to database",
-  })
 });
+
 
 router.get("/archives", async (req, res) => {
   try {

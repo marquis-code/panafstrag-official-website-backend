@@ -6,8 +6,8 @@ let ReportSchema = new mongoose.Schema ({
     publicationDate:{ 
         type: String
     },  
-    uploadedDocumentFiles:{ 
-        type: [String]
+    uploadedDocumentFile:{ 
+        type: String
     }
 },{
     timestamps: true

@@ -12,9 +12,8 @@ let ArchiveSchema = new mongoose.Schema ({
         type: String, 
         lowercase: true
     },  
-    uploadedDocumentFiles:{ 
-        type: [String], 
-        lowercase: true
+    uploadedDocumentFile:{ 
+        type: String, 
     }
 },{
     timestamps: true

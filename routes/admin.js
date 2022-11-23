@@ -61,6 +61,7 @@ router.post('/signin', async (req, res) => {
        const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
        
        res.status(200).json({accessToken})
+       res.set('authorization', `Bearer ${accessToken}`)
   
   } catch (error) {
     console.log(error);
