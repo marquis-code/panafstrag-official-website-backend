@@ -5,6 +5,7 @@ const Reports = require("../models/Reports");
 const Archives = require("../models/Archives");
 const Programmes = require("../models/Programmes");
 const Objectives = require("../models/Objectives");
+const Responsibilities = require("../models/Responsibilities");
 const { authenticateJwt } = require("../middleware/authenticator");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
@@ -394,6 +395,82 @@ router.delete("/archives/:id", authenticateJwt, async (req, res) => {
     res.status(200).json({
       successMessage: "Archives was successfully removed",
     });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong while fetching user" });
+  }
+});
+
+
+
+
+//Responsibilities
+
+router.post("/responsibilities", authenticateJwt, async (req, res) => {
+  const { description } = req.body;
+  try {
+    const data = {
+      description,
+    };
+    const newResponsibility = await Responsibilities.create(data);
+    newResponsibility.save();
+    res.status(201).json({
+      successMessage: "New responsibility was sucessfully saved to database",
+    });
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
+  }
+});
+
+router.get("/responsibilities", async (req, res) => {
+  try {
+    const allResponsibilities = await Responsibilities.find();
+    return res.status(200).json(allResponsibilities);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
+
+router.put("/responsibilities/:id", authenticateJwt, async (req, res) => {
+  const { description } = req.body;
+  const _id = req.params.id;
+
+  try {
+    let responsibility = await Responsibilities.findOne({ _id });
+
+    if (!responsibility) {
+      return res
+        .status(200)
+        .json(
+          `Responsibility with ID ${_id} was not found; a new question was created`
+        );
+    } else {
+      responsibility.description = description;
+      await responsibility.save();
+      return res
+        .status(200)
+        .json({ successMessage: `Responsibility was successfully updated` });
+    }
+  } catch (error) {
+    return res.status(500).json({ errorMessage: "Something went wrong" });
+  }
+});
+
+router.delete("/responsibilities/:id", authenticateJwt, async (req, res) => {
+  const _id = req.params.id;
+  try {
+    const deletedResponsibility = await Responsibilities.deleteOne({ _id }).exec();
+
+    if (deletedResponsibility.deletedCount === 0) {
+      return res.status(404).json({ errorMessage: `Responsibility does not Exist` });
+    } else {
+      res.status(200).json({
+        successMessage: `Responsibility With ID was Successfully Deleted`,
+      });
+    }
   } catch (error) {
     res
       .status(500)
