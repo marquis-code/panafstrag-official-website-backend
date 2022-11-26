@@ -6,7 +6,7 @@ let ReportSchema = new mongoose.Schema ({
     publicationDate:{ 
         type: String
     },  
-    uploadedDocumentFile:{ 
+    uploadedDocumentFile:{                      
         type: String
     }
 },{

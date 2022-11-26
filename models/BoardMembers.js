@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 let BoardMembersSchema = new mongoose.Schema ({
     avatar : {
        type : String,
+       required: false
     },
     name:{ 
         type: String, 
@@ -29,7 +30,8 @@ let BoardMembersSchema = new mongoose.Schema ({
         type: String
        },
     cloudinary_id : {
-        type: String
+        type: String,
+        required: false
     }
 },{
     timestamps: true
