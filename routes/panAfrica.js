@@ -336,28 +336,20 @@ router.delete("/reports/:id", authenticateJwt, async (req, res) => {
 router.post(
   "/archives",
   authenticateJwt,
-  upload.single("archive"),
   async (req, res) => {
-    const { title, publicationDate, description } = req.body;
+    const { title, publicationDate, description, uploadedVideoUrl } = req.body;
     try {
-      if (!req.file) {
-        return res.status(400).json({ errorMessage: "Please upload an image" });
-      }
-      const upload_response = await cloudinary.uploader.upload(req.file.path);
-      if (upload_response) {
         const data = {
           title,
           publicationDate,
           description,
-          uploadedDocumentFile: upload_response.url,
-          cloudinary_id: upload_response.public_id,
+          uploadedVideoUrl
         };
         let archive = new Archives(data);
         await archive.save();
         res.status(200).json({
           successMessage: "New Archive was sucessfully saved to database",
         });
-      }
     } catch (error) {
       res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
     }
@@ -391,7 +383,6 @@ router.delete("/archives/:id", authenticateJwt, async (req, res) => {
   const _id = req.params.id;
   try {
     let user = await Archives.findById(_id);
-    await cloudinary.uploader.destroy(user.cloudinary_id);
     await user.remove();
     res.status(200).json({
       successMessage: "Archives was successfully removed",

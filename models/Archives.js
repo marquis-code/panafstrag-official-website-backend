@@ -12,7 +12,7 @@ let ArchiveSchema = new mongoose.Schema ({
         type: String, 
         lowercase: true
     },  
-    uploadedDocumentFile:{ 
+    uploadedVideoUrl: { 
         type: String, 
     }
 },{
