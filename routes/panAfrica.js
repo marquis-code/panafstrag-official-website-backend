@@ -260,6 +260,18 @@ router.get("/programmes", async (req, res) => {
   }
 });
 
+router.get("/programmes/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    let program = await Programmes.findById(_id);
+    return res.status(200).json(program);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
+
 router.delete("/programmes/:id", authenticateJwt, async (req, res) => {
   const _id = req.params.id;
   try {
