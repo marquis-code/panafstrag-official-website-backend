@@ -236,6 +236,7 @@ router.post(
     const programe = new Programmes({
       title: req.body.title,
       theme: req.body.theme,
+      uploadedVideoUrl: req.body.uploadedVideoUrl,
       startToEndDate: req.body.startToEndDate,
       uploadedDocumentFiles: urls.map((url) => url.res),
     });

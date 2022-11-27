@@ -12,7 +12,10 @@ let ProgrammeSchema = new mongoose.Schema(
     },
     uploadedDocumentFiles: {
       type: [String]
-    }
+    },
+    uploadedVideoUrl: { 
+      type: String, 
+  }
   },
   {
     timestamps: true,
