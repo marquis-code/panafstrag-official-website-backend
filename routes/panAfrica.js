@@ -220,7 +220,7 @@ const cloudinaryImageUploadMethod = async (file) => {
 router.post(
   "/programmes",
   authenticateJwt,
-  upload.array("images", 12),
+  upload.array("programmes", 12),
   async (req, res) => {
     if (!req.files) {
       return res.status(400).json({ errorMessage: "Please upload an image" });
