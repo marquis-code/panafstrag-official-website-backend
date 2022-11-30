@@ -6,6 +6,7 @@ const Archives = require("../models/Archives");
 const Programmes = require("../models/Programmes");
 const Objectives = require("../models/Objectives");
 const Responsibilities = require("../models/Responsibilities");
+const Subscription = require("../models/Subscription");
 const { authenticateJwt } = require("../middleware/authenticator");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
@@ -346,28 +347,24 @@ router.delete("/reports/:id", authenticateJwt, async (req, res) => {
   }
 });
 
-router.post(
-  "/archives",
-  authenticateJwt,
-  async (req, res) => {
-    const { title, publicationDate, description, uploadedVideoUrl } = req.body;
-    try {
-        const data = {
-          title,
-          publicationDate,
-          description,
-          uploadedVideoUrl
-        };
-        let archive = new Archives(data);
-        await archive.save();
-        res.status(200).json({
-          successMessage: "New Archive was sucessfully saved to database",
-        });
-    } catch (error) {
-      res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
-    }
+router.post("/archives", authenticateJwt, async (req, res) => {
+  const { title, publicationDate, description, uploadedVideoUrl } = req.body;
+  try {
+    const data = {
+      title,
+      publicationDate,
+      description,
+      uploadedVideoUrl,
+    };
+    let archive = new Archives(data);
+    await archive.save();
+    res.status(200).json({
+      successMessage: "New Archive was sucessfully saved to database",
+    });
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
   }
-);
+});
 
 router.get("/archives", async (req, res) => {
   try {
@@ -406,9 +403,6 @@ router.delete("/archives/:id", authenticateJwt, async (req, res) => {
       .json({ errorMessage: "Something went wrong while fetching user" });
   }
 });
-
-
-
 
 //Responsibilities
 
@@ -467,10 +461,14 @@ router.put("/responsibilities/:id", authenticateJwt, async (req, res) => {
 router.delete("/responsibilities/:id", authenticateJwt, async (req, res) => {
   const _id = req.params.id;
   try {
-    const deletedResponsibility = await Responsibilities.deleteOne({ _id }).exec();
+    const deletedResponsibility = await Responsibilities.deleteOne({
+      _id,
+    }).exec();
 
     if (deletedResponsibility.deletedCount === 0) {
-      return res.status(404).json({ errorMessage: `Responsibility does not Exist` });
+      return res
+        .status(404)
+        .json({ errorMessage: `Responsibility does not Exist` });
     } else {
       res.status(200).json({
         successMessage: `Responsibility With ID was Successfully Deleted`,
@@ -483,4 +481,30 @@ router.delete("/responsibilities/:id", authenticateJwt, async (req, res) => {
   }
 });
 
+router.post("/subscription", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const data = {
+      email,
+    };
+    const newSubsccription = await Subscription.create(data);
+    newSubsccription.save();
+    res.status(201).json({
+      successMessage: "Subscription was successful",
+    });
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
+  }
+});
+
+router.get("/subscription", async (req, res) => {
+  try {
+    const allSubscriptions = await Subscription.find();
+    return res.status(200).json(allSubscriptions);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
 module.exports = router;
