@@ -26,14 +26,11 @@ transporter.use('compile', hbs({
 
 router.post("/signup", async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
-  console.log(req.body);
 
   const validationResult = registerSchema.validate(req.body, {
     abortEarly: false,
   });
-  console.log(req.body);
   if (validationResult.error) {
-    console.log(validationResult.error.details[0].message);
     let errorMsg = validationResult.error.details[0].message;
     return res.status(400).json({ errorMessage: errorMsg });
   }
@@ -53,7 +50,6 @@ router.post("/signup", async (req, res) => {
       email,
       password: hashedPassword,
     });
-    console.log(newAdmin);
 
     await newAdmin.save();
 
@@ -61,7 +57,6 @@ router.post("/signup", async (req, res) => {
       .status(201)
       .json({ successMessage: "Registeration success, Please sign in" });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ errorMessage: "Something went wrong, please try again." });
@@ -78,7 +73,6 @@ router.post("/signin", async (req, res) => {
     }
 
     const isMatchPassword = bcrypt.compare(password, user.password);
-    console.log(isMatchPassword);
     if (!isMatchPassword) {
       return res
         .status(400)
@@ -94,7 +88,6 @@ router.post("/signin", async (req, res) => {
 
     res.status(200).json({ accessToken });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ errorMessage: "Something went wrong, please try again." });
@@ -151,7 +144,6 @@ router.post("/subscribe", async (req, res) => {
     },
     (error, info) => {
       if (error) {
-        console.log(error);
       } else {
         return res.status(200).json({
           successMessage: "Email was sent successfully check your email",
