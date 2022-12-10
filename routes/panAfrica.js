@@ -6,7 +6,6 @@ const Archives = require("../models/Archives");
 const Programmes = require("../models/Programmes");
 const Objectives = require("../models/Objectives");
 const Responsibilities = require("../models/Responsibilities");
-const Subscription = require("../models/Subscription");
 const { authenticateJwt } = require("../middleware/authenticator");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
@@ -51,7 +50,6 @@ router.post(
         });
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
     }
   }
@@ -213,6 +211,7 @@ const cloudinaryImageUploadMethod = async (file) => {
           .json({ errorMessage: "Sorry!!! Internal server Error" });
       resolve({
         res: res.secure_url,
+        id: res.public_id,
       });
     });
   });
@@ -237,8 +236,10 @@ router.post(
     const programe = new Programmes({
       title: req.body.title,
       theme: req.body.theme,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
       uploadedVideoUrl: req.body.uploadedVideoUrl,
-      startToEndDate: req.body.startToEndDate,
+      cloudinary_id: urls.map((url) => url.id),
       uploadedDocumentFiles: urls.map((url) => url.res),
     });
 
@@ -314,7 +315,6 @@ router.post(
         });
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
     }
   }
@@ -478,33 +478,6 @@ router.delete("/responsibilities/:id", authenticateJwt, async (req, res) => {
     res
       .status(500)
       .json({ errorMessage: "Something went wrong while fetching user" });
-  }
-});
-
-router.post("/subscription", async (req, res) => {
-  const { email } = req.body;
-  try {
-    const data = {
-      email,
-    };
-    const newSubsccription = await Subscription.create(data);
-    newSubsccription.save();
-    res.status(201).json({
-      successMessage: "Subscription was successful",
-    });
-  } catch (error) {
-    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
-  }
-});
-
-router.get("/subscription", async (req, res) => {
-  try {
-    const allSubscriptions = await Subscription.find();
-    return res.status(200).json(allSubscriptions);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ errorMessage: "Something went wrong, Please try again." });
   }
 });
 module.exports = router;

@@ -2,20 +2,26 @@ const mongoose = require("mongoose");
 let ProgrammeSchema = new mongoose.Schema(
   {
     title: {
-      type: String
+      type: String,
     },
     theme: {
-      type: String
+      type: String,
     },
-    startToEndDate: {
-      type: String
+    startDate: {
+      type: String,
+    },
+    endDate: {
+      type: String,
     },
     uploadedDocumentFiles: {
-      type: [String]
+      type: [String],
     },
-    uploadedVideoUrl: { 
-      type: String, 
-  }
+    uploadedVideoUrl: {
+      type: String,
+    },
+    cloudinary_id: {
+      type: [String],
+    },
   },
   {
     timestamps: true,
