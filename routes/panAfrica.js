@@ -445,6 +445,18 @@ router.get("/responsibilities", async (req, res) => {
   }
 });
 
+router.get("/responsibilities/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    let responsibility = await Responsibilities.findById(_id);
+    return res.status(200).json(responsibility);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
+
 router.put("/responsibilities/:id", authenticateJwt, async (req, res) => {
   const { description } = req.body;
   const _id = req.params.id;
