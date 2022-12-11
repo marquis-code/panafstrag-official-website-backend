@@ -158,6 +158,18 @@ router.get("/objective", async (req, res) => {
   }
 });
 
+router.get("/objective/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    let objective = await Objectives.findById(_id);
+    return res.status(200).json(objective);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
+
 router.put("/objective/:id", authenticateJwt, async (req, res) => {
   const { description } = req.body;
   const _id = req.params.id;
