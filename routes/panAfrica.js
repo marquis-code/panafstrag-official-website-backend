@@ -83,33 +83,54 @@ router.put(
   authenticateJwt,
   upload.single("image"),
   async (req, res) => {
+    console.log(req.file);
     const _id = req.params.id;
     try {
       let user = await BoardMembers.findById(_id);
+      console.log(user);
 
-      await cloudinary.uploader.destroy(user.cloudinary_id);
+      if (require.file === undefined) {
+        const data = {
+          name: req.body.name || user.name,
+          email: req.body.email || user.email,
+          university: req.body.university || user.university,
+          department: req.body.department || user.department,
+          faculty: req.body.faculty || user.faculty,
+          position: req.body.position || user.position,
+          bio: req.body.bio || user.bio,
+          dateJoined: req.body.dateJoined || user.dateJoined
+        };
 
-      const result = await cloudinary.uploader.upload(req.file.path);
+        user = await BoardMembers.findByIdAndUpdate(_id, data, { new: true });
 
-      const data = {
-        name: req.body.name || user.name,
-        email: req.body.email || user.email,
-        university: req.body.university || user.university,
-        department: req.body.department || user.department,
-        faculty: req.body.faculty || user.faculty,
-        position: req.body.position || user.position,
-        bio: req.body.bio || user.bio,
-        dateJoined: req.body.dateJoined || user.dateJoined,
-        avatar: result.secure_url || user.avatar,
-        cloudinary_id: result.public_id || user.cloudinary_id,
-      };
+        return res.status(200).json({
+          successMessage: `Board Member data was successfully updated`,
+        });
+      } else {
+        await cloudinary.uploader.destroy(user.cloudinary_id);
+        const result = await cloudinary.uploader.upload(req.file.path || "");
 
-      user = await BoardMembers.findByIdAndUpdate(_id, data, { new: true });
+        const data = {
+          name: req.body.name || user.name,
+          email: req.body.email || user.email,
+          university: req.body.university || user.university,
+          department: req.body.department || user.department,
+          faculty: req.body.faculty || user.faculty,
+          position: req.body.position || user.position,
+          bio: req.body.bio || user.bio,
+          dateJoined: req.body.dateJoined || user.dateJoined,
+          avatar: result.secure_url || user.avatar,
+          cloudinary_id: result.public_id || user.cloudinary_id,
+        };
 
-      return res
-        .status(200)
-        .json({ successMessage: `Board Member data was successfully updated` });
+        user = await BoardMembers.findByIdAndUpdate(_id, data, { new: true });
+
+        return res.status(200).json({
+          successMessage: `Board Member data was successfully updated`,
+        });
+      }
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ errorMessage: "Something went wrong" });
     }
   }
