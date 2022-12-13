@@ -8,21 +8,26 @@ const _ = require("lodash");
 const Subscription = require("../models/Subscription");
 const nodemailer = require("nodemailer");
 const nodemailerMailgunTransport = require("nodemailer-mailgun-transport");
-const hbs = require('nodemailer-express-handlebars');
+const hbs = require("nodemailer-express-handlebars");
 
 const auth = {
   auth: {
     api_key: process.env.MAILGUN_APIKEY,
-    domain: process.env.MAILGUN_DOMAIN
-  }
-}
+    domain: process.env.MAILGUN_DOMAIN,
+  },
+};
 
-const transporter = nodemailer.createTransport(nodemailerMailgunTransport(auth));
+const transporter = nodemailer.createTransport(
+  nodemailerMailgunTransport(auth)
+);
 
-transporter.use('compile', hbs({
-  viewEngine: 'express-handlebars',
-  viewPath: './views/'
-}));
+transporter.use(
+  "compile",
+  hbs({
+    viewEngine: "express-handlebars",
+    viewPath: "./views/",
+  })
+);
 
 router.post("/signup", async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
@@ -85,15 +90,18 @@ router.post("/signin", async (req, res) => {
       expiresIn: process.env.JWT_EXPIRE,
     });
     res.set("authorization", `Bearer ${accessToken}`);
-
-    res.status(200).json({ accessToken });
+    let modifiedUser = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
+    res.status(200).json({ accessToken, user: modifiedUser });
   } catch (error) {
     return res
       .status(500)
       .json({ errorMessage: "Something went wrong, please try again." });
   }
 });
-
 
 router.get("/subscription", async (req, res) => {
   try {
@@ -139,8 +147,8 @@ router.post("/subscribe", async (req, res) => {
               <p>Thank you again!</p>
             </div>
             `,
-      attachments: [{filename: 'success.jpg', path: './success.jpeg'}],
-      template: 'index'
+      attachments: [{ filename: "success.jpg", path: "./success.jpeg" }],
+      template: "index",
     },
     (error, info) => {
       if (error) {
@@ -151,7 +159,6 @@ router.post("/subscribe", async (req, res) => {
       }
     }
   );
-
 });
 
 module.exports = router;
