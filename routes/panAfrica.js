@@ -286,13 +286,13 @@ router.get("/programmes/:id", async (req, res) => {
   }
 });
 
-router.delete("/programmes/:id", async (req, res) => {
+router.delete("/programmes/:id", authenticateJwt, async (req, res) => {
   const _id = req.params.id;
   try {
     let program = await Programmes.findById(_id);
     program.cloudinary_id.forEach((eachId) => {
       cloudinary.uploader.destroy(eachId);
-    })
+    });
     await program.remove();
     res.status(200).json({
       successMessage: "Programme was successfully removed",
