@@ -286,16 +286,19 @@ router.get("/programmes/:id", async (req, res) => {
   }
 });
 
-router.delete("/programmes/:id", authenticateJwt, async (req, res) => {
+router.delete("/programmes/:id", async (req, res) => {
   const _id = req.params.id;
   try {
-    let user = await Programmes.findById(_id);
-    await cloudinary.uploader.destroy(user.cloudinary_id);
-    await user.remove();
+    let program = await Programmes.findById(_id);
+    program.cloudinary_id.forEach((eachId) => {
+      cloudinary.uploader.destroy(eachId);
+    })
+    await program.remove();
     res.status(200).json({
       successMessage: "Programme was successfully removed",
     });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ errorMessage: "Something went wrong while fetching user" });
