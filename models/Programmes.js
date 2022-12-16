@@ -19,6 +19,9 @@ let ProgrammeSchema = new mongoose.Schema(
     uploadedVideoUrl: {
       type: String,
     },
+    session_form: {
+      type: String,
+    },
     cloudinary_id: {
       type: [String],
     },

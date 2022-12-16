@@ -271,6 +271,7 @@ router.post(
       theme: req.body.theme,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
+      session_form: req.body.session_form,
       uploadedVideoUrl: req.body.uploadedVideoUrl,
       cloudinary_id: urls.map((url) => url.id),
       uploadedDocumentFiles: urls.map((url) => url.res),
