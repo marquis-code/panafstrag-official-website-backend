@@ -323,7 +323,7 @@ router.post("/subscribe", async (req, res) => {
               <h4>Thank you for subscribing to our newsletter.</h4>
               <p>Your subscription has been confirmed.</p
               <p>If at anytime you wish to stop recieving our newsletter, you can click the Unsubscribe link in the bottom of the news letter</p>
-              <p>If you have any question about PANAFSTRAG, please free to contact us via;
+              <p>If you have any questions about PANAFSTRAG, contact us via the following emails:
                <p>panafstraginternational@gmail.com</p>
               <p>isholawilliams@gmail.com</p>
               <p>Sincerely,</p>
