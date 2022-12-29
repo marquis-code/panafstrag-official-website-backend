@@ -6,13 +6,13 @@ const Archives = require("../models/Archives");
 const Programmes = require("../models/Programmes");
 const Objectives = require("../models/Objectives");
 const Responsibilities = require("../models/Responsibilities");
-const { authenticateJwt } = require("../middleware/authenticator");
+// const {  } = require("../middleware/authenticator");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
 
 router.post(
   "/board-member",
-  authenticateJwt,
+  // ,
   upload.single("image"),
   async (req, res) => {
     const {
@@ -80,7 +80,7 @@ router.get("/board-member/:id", async (req, res) => {
 
 router.put(
   "/board-member/:id",
-  authenticateJwt,
+  // ,
   upload.single("image"),
   async (req, res) => {
     try {
@@ -120,7 +120,7 @@ router.put(
   }
 );
 
-router.delete("/board-member/:id", authenticateJwt, async (req, res) => {
+router.delete("/board-member/:id", async (req, res) => {
   const _id = req.params.id;
   try {
     let user = await BoardMembers.findById(_id);
@@ -136,7 +136,7 @@ router.delete("/board-member/:id", authenticateJwt, async (req, res) => {
   }
 });
 
-router.post("/objective", authenticateJwt, async (req, res) => {
+router.post("/objective", async (req, res) => {
   const { description } = req.body;
   try {
     const data = {
@@ -175,7 +175,7 @@ router.get("/objective/:id", async (req, res) => {
   }
 });
 
-router.put("/objective/:id", authenticateJwt, async (req, res) => {
+router.put("/objective/:id", async (req, res) => {
   const { description } = req.body;
   const _id = req.params.id;
 
@@ -200,7 +200,7 @@ router.put("/objective/:id", authenticateJwt, async (req, res) => {
   }
 });
 
-router.delete("/objective/:id", authenticateJwt, async (req, res) => {
+router.delete("/objective/:id", async (req, res) => {
   const _id = req.params.id;
   try {
     const deletedObjective = await Objectives.deleteOne({ _id }).exec();
@@ -234,40 +234,35 @@ const cloudinaryImageUploadMethod = async (file) => {
   });
 };
 
-router.post(
-  "/programmes",
-  authenticateJwt,
-  upload.array("programmes", 12),
-  async (req, res) => {
-    if (!req.files) {
-      return res.status(400).json({ errorMessage: "Please upload an image" });
-    }
-    const urls = [];
-    const files = req.files;
-    for (const file of files) {
-      const { path } = file;
-      const newPath = await cloudinaryImageUploadMethod(path);
-      urls.push(newPath);
-    }
-
-    const programe = new Programmes({
-      title: req.body.title,
-      theme: req.body.theme,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      session_form: req.body.session_form,
-      uploadedVideoUrl: req.body.uploadedVideoUrl,
-      cloudinary_id: urls.map((url) => url.id),
-      uploadedDocumentFiles: urls.map((url) => url.res),
-    });
-
-    await programe.save();
-
-    res.status(200).json({
-      successMessage: "New Programme was sucessfully saved to database",
-    });
+router.post("/programmes", upload.array("programmes", 12), async (req, res) => {
+  if (!req.files) {
+    return res.status(400).json({ errorMessage: "Please upload an image" });
   }
-);
+  const urls = [];
+  const files = req.files;
+  for (const file of files) {
+    const { path } = file;
+    const newPath = await cloudinaryImageUploadMethod(path);
+    urls.push(newPath);
+  }
+
+  const programe = new Programmes({
+    title: req.body.title,
+    theme: req.body.theme,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    session_form: req.body.session_form,
+    uploadedVideoUrl: req.body.uploadedVideoUrl,
+    cloudinary_id: urls.map((url) => url.id),
+    uploadedDocumentFiles: urls.map((url) => url.res),
+  });
+
+  await programe.save();
+
+  res.status(200).json({
+    successMessage: "New Programme was sucessfully saved to database",
+  });
+});
 
 router.get("/programmes", async (req, res) => {
   try {
@@ -292,7 +287,7 @@ router.get("/programmes/:id", async (req, res) => {
   }
 });
 
-router.delete("/programmes/:id", authenticateJwt, async (req, res) => {
+router.delete("/programmes/:id", async (req, res) => {
   const _id = req.params.id;
   try {
     let program = await Programmes.findById(_id);
@@ -311,35 +306,30 @@ router.delete("/programmes/:id", authenticateJwt, async (req, res) => {
   }
 });
 
-router.post(
-  "/reports",
-  authenticateJwt,
-  upload.single("report"),
-  async (req, res) => {
-    const { title, publicationDate } = req.body;
-    try {
-      if (!req.file) {
-        return res.status(400).json({ errorMessage: "Please upload an image" });
-      }
-      const upload_response = await cloudinary.uploader.upload(req.file.path);
-      if (upload_response) {
-        const data = {
-          title,
-          publicationDate,
-          uploadedDocumentFile: upload_response.url,
-          cloudinary_id: upload_response.public_id,
-        };
-        let report = new Reports(data);
-        await report.save();
-        res.status(200).json({
-          successMessage: "New report was sucessfully saved to database",
-        });
-      }
-    } catch (error) {
-      res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
+router.post("/reports", upload.single("report"), async (req, res) => {
+  const { title, publicationDate } = req.body;
+  try {
+    if (!req.file) {
+      return res.status(400).json({ errorMessage: "Please upload an image" });
     }
+    const upload_response = await cloudinary.uploader.upload(req.file.path);
+    if (upload_response) {
+      const data = {
+        title,
+        publicationDate,
+        uploadedDocumentFile: upload_response.url,
+        cloudinary_id: upload_response.public_id,
+      };
+      let report = new Reports(data);
+      await report.save();
+      res.status(200).json({
+        successMessage: "New report was sucessfully saved to database",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
   }
-);
+});
 
 router.get("/reports", async (req, res) => {
   try {
@@ -352,7 +342,7 @@ router.get("/reports", async (req, res) => {
   }
 });
 
-router.delete("/reports/:id", authenticateJwt, async (req, res) => {
+router.delete("/reports/:id", async (req, res) => {
   const _id = req.params.id;
   try {
     let user = await Reports.findById(_id);
@@ -368,7 +358,7 @@ router.delete("/reports/:id", authenticateJwt, async (req, res) => {
   }
 });
 
-router.post("/archives", authenticateJwt, async (req, res) => {
+router.post("/archives", async (req, res) => {
   const { title, publicationDate, description, uploadedVideoUrl } = req.body;
   try {
     const data = {
@@ -410,7 +400,7 @@ router.get("/archives/:id", async (req, res) => {
   }
 });
 
-router.delete("/archives/:id", authenticateJwt, async (req, res) => {
+router.delete("/archives/:id", async (req, res) => {
   const _id = req.params.id;
   try {
     let user = await Archives.findById(_id);
@@ -427,7 +417,7 @@ router.delete("/archives/:id", authenticateJwt, async (req, res) => {
 
 //Responsibilities
 
-router.post("/responsibilities", authenticateJwt, async (req, res) => {
+router.post("/responsibilities", async (req, res) => {
   const { description } = req.body;
   try {
     const data = {
@@ -466,7 +456,7 @@ router.get("/responsibilities/:id", async (req, res) => {
   }
 });
 
-router.put("/responsibilities/:id", authenticateJwt, async (req, res) => {
+router.put("/responsibilities/:id", async (req, res) => {
   const { description } = req.body;
   const _id = req.params.id;
 
@@ -491,7 +481,7 @@ router.put("/responsibilities/:id", authenticateJwt, async (req, res) => {
   }
 });
 
-router.delete("/responsibilities/:id", authenticateJwt, async (req, res) => {
+router.delete("/responsibilities/:id", async (req, res) => {
   const _id = req.params.id;
   try {
     const deletedResponsibility = await Responsibilities.deleteOne({

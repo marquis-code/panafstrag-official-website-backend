@@ -373,7 +373,6 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
       createdAt: Date.now(),
     });
 
-    console.log(newOTPVerification);
     await newOTPVerification.save();
     await transporter.sendMail(mailOptions);
 
