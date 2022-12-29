@@ -1,8 +1,8 @@
 const Joi = require("@hapi/joi");
 
 const registerSchema = Joi.object({
-  firstName: Joi.string().trim().min(3).max(64).required(),
-  lastName: Joi.string().trim().min(3).max(64).required(),
+  firstName: Joi.string().trim().min(3).max(64),
+  lastName: Joi.string().trim().min(3).max(64),
   email: Joi.string()
     .email()
     .trim()

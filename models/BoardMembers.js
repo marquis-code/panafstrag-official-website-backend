@@ -1,40 +1,43 @@
-const mongoose = require('mongoose');
-let BoardMembersSchema = new mongoose.Schema ({
-    avatar : {
-       type : String
+const mongoose = require("mongoose");
+let BoardMembersSchema = new mongoose.Schema(
+  {
+    avatar: {
+      type: String,
     },
-    name:{ 
-        type: String, 
+    name: {
+      type: String,
     },
-    email : {
-        type : [String]
-      },
-    university:{ 
-        type: String, 
-        lowercase: true
+    email: {
+      type: [String],
     },
-    department:{ 
-        type: String, 
-    },  
-    faculty:{ 
-        type: String, 
+    university: {
+      type: String,
+      lowercase: true,
     },
-    position:{ 
-        type: String, 
+    department: {
+      type: String,
     },
-    bio:{ 
-        type: String, 
+    faculty: {
+      type: String,
     },
-    dateJoined:{
-        type: String
-       },
-    cloudinary_id : {
-        type: String
-    }
-},{
-    timestamps: true
-});
+    position: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
+    dateJoined: {
+      type: String,
+    },
+    cloudinary_id: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-const BoardMembers = mongoose.model('BoardMember',BoardMembersSchema);
+const BoardMembers = mongoose.model("BoardMember", BoardMembersSchema);
 
 module.exports = BoardMembers;
