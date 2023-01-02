@@ -78,7 +78,7 @@ router.get("/board-member/:id", async (req, res) => {
   }
 });
 
-router.put(
+router.patch(
   "/board-member/:id",
   // ,
   upload.single("image"),
@@ -175,7 +175,7 @@ router.get("/objective/:id", async (req, res) => {
   }
 });
 
-router.put("/objective/:id", async (req, res) => {
+router.patch("/objective/:id", async (req, res) => {
   const { description } = req.body;
   const _id = req.params.id;
 
@@ -189,8 +189,10 @@ router.put("/objective/:id", async (req, res) => {
           `Objective with ID ${_id} was not found; a new question was created`
         );
     } else {
-      objective.description = description;
-      await objective.save();
+      await Objectives.findByIdAndUpdate(_id, description, {
+        new: true,
+      });
+
       return res
         .status(200)
         .json({ successMessage: `Objective data was successfully updated` });
@@ -456,7 +458,7 @@ router.get("/responsibilities/:id", async (req, res) => {
   }
 });
 
-router.put("/responsibilities/:id", async (req, res) => {
+router.patch("/responsibilities/:id", async (req, res) => {
   const { description } = req.body;
   const _id = req.params.id;
 
@@ -470,8 +472,9 @@ router.put("/responsibilities/:id", async (req, res) => {
           `Responsibility with ID ${_id} was not found; a new question was created`
         );
     } else {
-      responsibility.description = description;
-      await responsibility.save();
+      await Responsibilities.findByIdAndUpdate(_id, description, {
+        new: true,
+      });
       return res
         .status(200)
         .json({ successMessage: `Responsibility was successfully updated` });

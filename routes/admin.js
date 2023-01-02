@@ -52,7 +52,7 @@ transporter.verify((error, success) => {
   }
 });
 
-router.post("/signup", async (req, res) => {
+router.post("/admin-signup", async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   const validationResult = registerSchema.validate(req.body, {
     abortEarly: false,
@@ -94,6 +94,31 @@ router.post("/signup", async (req, res) => {
     return res.json({
       errorMessage: "Something went wrong, please try again.",
     });
+  }
+});
+
+router.post("/admin-signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await Admin.findOne({ email }).select("+password");
+    if (user) {
+      const isMatchPassword = bcrypt.compare(password, user.password);
+      if (!isMatchPassword) {
+        return res
+          .status(400)
+          .json({ errorMessage: "INVALID LOGIN CREDENTIALS" });
+      } else {
+        sendOTPVerificationEmail(user, res);
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ errorMessage: "INVALID LOGIN CREDENTIALS" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ errorMessage: "SOMETHING WENT WRONG, PLEASE TRY AGAIN." });
   }
 });
 
@@ -355,12 +380,18 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
       to: email,
-      subject: "Verify Your Email (One Time Password)",
+      subject: "PANAFSTRAG Email Verification Code (One Time Password)",
       html: `
-           <p>A One Time Password has been sent to ${email}</p>
-           <p>Please enter the OTP ${otp} to verify your Email Address. If you cannot see the email from 'sandbox.mgsend.net' in your inbox.</p>
-           <p>make sure to check your SPAM folder</p>
-            <p>This code <b>expires in 1 hour</b>.</p>
+           <p>Hi</p>
+           <p>We recieved a request to access your PANAFSTRAG Account ${email} through your email address.</p>
+           <p>Your One Time OTP verification code is: <h3> ${otp}</h3></p>
+           <p>Please enter the OTP $to verify your Email Address.</p>
+           <p>If you did not request this code, it is possible that someone else is trying to access the PANAFSTRAG Account ${email}</p>
+           <p><b>Do not forward or give this code to anyone.</b></p>
+           <p> If you cannot see the email from 'sandbox.mgsend.net' in your inbox, make sure to check your SPAM folder.</p>
+          <p>This code <b>expires in 48 hours</b>.</p>
+          <p>Sincerely yours,</p>
+          <p>The Google Accounts team</p>
       `,
     };
 
@@ -369,7 +400,7 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
     const newOTPVerification = await new OTPVerification({
       userId: _id,
       otp: hashedOtp,
-      expiresAt: Date.now() + 3600000,
+      expiresAt: Date.now() + 172800000,
       createdAt: Date.now(),
     });
 
@@ -427,6 +458,7 @@ router.post("/verifyOtp", async (req, res) => {
             await OTPVerification.deleteMany({ userId });
             return res.status(200).json({
               successMessage: "Email has been verified.",
+              data: { userId },
             });
           }
         }

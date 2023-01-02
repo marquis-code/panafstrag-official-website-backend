@@ -12,7 +12,6 @@ let BoardMembersSchema = new mongoose.Schema(
     },
     university: {
       type: String,
-      lowercase: true,
     },
     department: {
       type: String,

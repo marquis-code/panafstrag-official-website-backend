@@ -2,15 +2,12 @@ const mongoose = require('mongoose');
 let ArchiveSchema = new mongoose.Schema ({
     title:{ 
         type: String, 
-        lowercase: true
     },
     publicationDate:{ 
         type: String, 
-        lowercase: true
     },  
     description:{ 
         type: String, 
-        lowercase: true
     },  
     uploadedVideoUrl: { 
         type: String, 

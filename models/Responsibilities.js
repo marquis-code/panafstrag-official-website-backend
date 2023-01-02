@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 let ResponsibilitiesSchema = new mongoose.Schema ({
     description:{ 
         type: String, 
-        lowercase: true
     }
 },{
     timestamps: true
