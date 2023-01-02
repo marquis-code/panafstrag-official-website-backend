@@ -331,7 +331,6 @@ router.post("/subscribe", async (req, res) => {
 
   try {
     let user = await Subscription.findOne({ email });
-    console.log(user);
 
     if (user) {
       return res.status(404).json({
@@ -367,10 +366,9 @@ router.post("/subscribe", async (req, res) => {
       successMessage: "Thanks for subscribing.",
     });
   } catch (error) {
-    console.log(error);
-    // return res.status(500).json({
-    //   errorMessage: error.messages,
-    // });
+    return res.status(500).json({
+      errorMessage: 'SOMETHING WENT WRONG. PLEASE TRY AGAIN',
+    });
   }
 });
 
@@ -385,7 +383,7 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
            <p>Hi</p>
            <p>We recieved a request to access your PANAFSTRAG Account ${email} through your email address.</p>
            <p>Your One Time OTP verification code is: <h3> ${otp}</h3></p>
-           <p>Please enter the OTP $to verify your Email Address.</p>
+           <p>Please enter the OTP to verify your Email Address.</p>
            <p>If you did not request this code, it is possible that someone else is trying to access the PANAFSTRAG Account ${email}</p>
            <p><b>Do not forward or give this code to anyone.</b></p>
            <p> If you cannot see the email from 'sandbox.mgsend.net' in your inbox, make sure to check your SPAM folder.</p>
@@ -429,8 +427,6 @@ router.post("/verifyOtp", async (req, res) => {
       const userOTPVerificationRecords = await OTPVerification.find({
         userId,
       });
-
-      console.log(userOTPVerificationRecords);
 
       if (userOTPVerificationRecords.length <= 0) {
         return res.status(400).json({
