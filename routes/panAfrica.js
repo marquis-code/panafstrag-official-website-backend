@@ -78,7 +78,7 @@ router.get("/board-member/:id", async (req, res) => {
   }
 });
 
-router.patch(
+router.put(
   "/board-member/:id",
   // ,
   upload.single("image"),
@@ -175,31 +175,24 @@ router.get("/objective/:id", async (req, res) => {
   }
 });
 
-router.patch("/objective/:id", async (req, res) => {
-  const { description } = req.body;
-  const _id = req.params.id;
+router.put("/objective/:id", (req, res) => {
+  const body = req.body;
+  const id = req.params.id;
 
-  try {
-    let objective = await Objectives.findOne({ _id });
-
-    if (!objective) {
-      return res
-        .status(200)
-        .json(
-          `Objective with ID ${_id} was not found; a new question was created`
-        );
-    } else {
-      await Objectives.findByIdAndUpdate(_id, description, {
-        new: true,
-      });
-
+  const newObjective = {
+    description: body.description,
+  };
+  Objectives.findByIdAndUpdate(id, newObjective, {
+    new: true,
+  })
+    .then(() => {
       return res
         .status(200)
         .json({ successMessage: `Objective data was successfully updated` });
-    }
-  } catch (error) {
-    return res.status(500).json({ errorMessage: "Something went wrong" });
-  }
+    })
+    .catch(() => {
+      return res.status(500).json({ errorMessage: "Something went wrong" });
+    });
 });
 
 router.delete("/objective/:id", async (req, res) => {
@@ -458,30 +451,24 @@ router.get("/responsibilities/:id", async (req, res) => {
   }
 });
 
-router.patch("/responsibilities/:id", async (req, res) => {
-  const { description } = req.body;
-  const _id = req.params.id;
+router.put("/responsibilities/:id", (req, res) => {
+  const body = req.body;
+  const id = req.params.id;
 
-  try {
-    let responsibility = await Responsibilities.findOne({ _id });
-
-    if (!responsibility) {
-      return res
-        .status(200)
-        .json(
-          `Responsibility with ID ${_id} was not found; a new question was created`
-        );
-    } else {
-      await Responsibilities.findByIdAndUpdate(_id, description, {
-        new: true,
-      });
+  const newResponsibility = {
+    description: body.description,
+  };
+  Responsibilities.findByIdAndUpdate(id, newResponsibility, {
+    new: true,
+  })
+    .then(() => {
       return res
         .status(200)
         .json({ successMessage: `Responsibility was successfully updated` });
-    }
-  } catch (error) {
-    return res.status(500).json({ errorMessage: "Something went wrong" });
-  }
+    })
+    .catch(() => {
+      return res.status(500).json({ errorMessage: "Something went wrong" });
+    });
 });
 
 router.delete("/responsibilities/:id", async (req, res) => {

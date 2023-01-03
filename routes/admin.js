@@ -367,7 +367,7 @@ router.post("/subscribe", async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      errorMessage: 'SOMETHING WENT WRONG. PLEASE TRY AGAIN',
+      errorMessage: "SOMETHING WENT WRONG. PLEASE TRY AGAIN",
     });
   }
 });
@@ -380,16 +380,17 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
       to: email,
       subject: "PANAFSTRAG Email Verification Code (One Time Password)",
       html: `
-           <p>Hi</p>
+           <p>Hi!</p>
            <p>We recieved a request to access your PANAFSTRAG Account ${email} through your email address.</p>
            <p>Your One Time OTP verification code is: <h3> ${otp}</h3></p>
-           <p>Please enter the OTP to verify your Email Address.</p>
+           <p>Please enter the OTP to verify your email address.</p>
+           <p>This code <b>expires in 30 minutes</b>.</p>
            <p>If you did not request this code, it is possible that someone else is trying to access the PANAFSTRAG Account ${email}</p>
            <p><b>Do not forward or give this code to anyone.</b></p>
            <p> If you cannot see the email from 'sandbox.mgsend.net' in your inbox, make sure to check your SPAM folder.</p>
-          <p>This code <b>expires in 48 hours</b>.</p>
-          <p>Sincerely yours,</p>
-          <p>The Google Accounts team</p>
+           <P>If you have any questions, send us an email panafstraginternational@gmail.com or isholawilliams@gmail.com</P>
+          <p>We’re glad you’re here!,</p>
+          <p>The PANAFSTRAG team</p>
       `,
     };
 
@@ -398,7 +399,7 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
     const newOTPVerification = await new OTPVerification({
       userId: _id,
       otp: hashedOtp,
-      expiresAt: Date.now() + 172800000,
+      expiresAt: Date.now() + 1800000,
       createdAt: Date.now(),
     });
 
