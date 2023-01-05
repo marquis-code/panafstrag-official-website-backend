@@ -25,6 +25,11 @@ let ProgrammeSchema = new mongoose.Schema(
     cloudinary_id: {
       type: [String],
     },
+    status: {
+      type: String,
+      default: "completed",
+      enum: ["pending", "active", "completed"],
+    },
   },
   {
     timestamps: true,

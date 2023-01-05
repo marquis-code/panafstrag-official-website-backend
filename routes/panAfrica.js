@@ -244,6 +244,7 @@ router.post("/programmes", upload.array("programmes", 12), async (req, res) => {
   const programe = new Programmes({
     title: req.body.title,
     theme: req.body.theme,
+    status : req.body.status,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     session_form: req.body.session_form,
