@@ -244,7 +244,7 @@ router.post("/programmes", upload.array("programmes", 12), async (req, res) => {
   const programe = new Programmes({
     title: req.body.title,
     theme: req.body.theme,
-    status : req.body.status,
+    status: req.body.status,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     session_form: req.body.session_form,
@@ -301,6 +301,64 @@ router.delete("/programmes/:id", async (req, res) => {
       .json({ errorMessage: "Something went wrong while fetching user" });
   }
 });
+
+router.put(
+  "/programmes/:id",
+  // ,
+  upload.array("programmes", 12),
+  async (req, res) => {
+    try {
+      // console.log(req.files)
+      let program = await Programmes.findById(req.params.id);
+      if (req.files.length === 0) {
+        program.cloudinary_id = program.cloudinary_id.map((url) => url)
+        program.uploadedDocumentFiles = program.uploadedDocumentFiles.map((url) => url)
+      }
+
+      const urls = [];
+
+      if (req.files) {
+        program.cloudinary_id.forEach((cloudinary_image_id) => {
+          clearProgramFiles(cloudinary_image_id);
+        });
+        const files = req.files;
+        for (const file of files) {
+          const { path } = file;
+          const newPath = await cloudinaryImageUploadMethod(path);
+          urls.push(newPath);
+        }
+      }
+
+      const data = {
+        title: req.body.title || program.title,
+        theme: req.body.theme || program.theme,
+        status: req.body.status || program.status,
+        startDate: req.body.startDate || program.startDate,
+        endDate: req.body.endDate || program.endDate,
+        session_form: req.body.session_form || program.session_form,
+        uploadedVideoUrl: req.body.uploadedVideoUrl || program.uploadedVideoUrl,
+        cloudinary_id: urls.map((url) => url.id) || program.cloudinary_id,
+        uploadedDocumentFiles:
+          urls.map((url) => url.res) || program.uploadedDocumentFiles,
+      };
+
+      program = await Programmes.findByIdAndUpdate(req.params.id, data, {
+        new: true,
+      });
+
+      return res.status(200).json({
+        successMessage: `Program was successfully updated`,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ errorMessage: "Something went wrong" });
+    }
+  }
+);
+
+const clearProgramFiles = async (image_cloudinary_id) => {
+  await cloudinary.uploader.destroy(image_cloudinary_id);
+};
 
 router.post("/reports", upload.single("report"), async (req, res) => {
   const { title, publicationDate } = req.body;
