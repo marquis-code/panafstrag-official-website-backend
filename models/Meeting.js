@@ -16,6 +16,6 @@ let MeetingSchema = new mongoose.Schema(
   }
 );
 
-const Meeting = mongoose.model("Report", MeetingSchema);
+const Meeting = mongoose.model("Meeting", MeetingSchema);
 
 module.exports = Meeting;
