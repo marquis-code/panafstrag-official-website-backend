@@ -527,7 +527,7 @@ router.put("/meeting/:id", (req, res) => {
     .then(() => {
       return res
         .status(200)
-        .json({ successMessage: `Meeting was successfully updated` });
+        .json({ successMessage: `Meeting url was successfully updated` });
     })
     .catch(() => {
       return res.status(500).json({ errorMessage: "Something went wrong" });
