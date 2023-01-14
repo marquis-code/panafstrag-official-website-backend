@@ -1,7 +1,6 @@
 const express = require("express");
 let router = express.Router();
 const BoardMembers = require("../models/BoardMembers");
-const Reports = require("../models/Reports");
 const Archives = require("../models/Archives");
 const Programmes = require("../models/Programmes");
 const Objectives = require("../models/Objectives");
@@ -327,62 +326,6 @@ router.put("/programmes/:id", upload.array("programmes", 12), (req, res) => {
     .catch(() => {
       return res.status(500).json({ errorMessage: "Something went wrong" });
     });
-});
-
-// const clearProgramFiles = async (image_cloudinary_id) => {
-//   await cloudinary.uploader.destroy(image_cloudinary_id);
-// };
-
-router.post("/reports", upload.single("report"), async (req, res) => {
-  const { title, publicationDate } = req.body;
-  try {
-    if (!req.file) {
-      return res.status(400).json({ errorMessage: "Please upload an image" });
-    }
-    const upload_response = await cloudinary.uploader.upload(req.file.path);
-    if (upload_response) {
-      const data = {
-        title,
-        publicationDate,
-        uploadedDocumentFile: upload_response.url,
-        cloudinary_id: upload_response.public_id,
-      };
-      let report = new Reports(data);
-      await report.save();
-      res.status(200).json({
-        successMessage: "New report was sucessfully saved to database",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
-  }
-});
-
-router.get("/reports", async (req, res) => {
-  try {
-    let users = await Reports.find();
-    return res.status(200).json(users);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ errorMessage: "Something went wrong, Please try again." });
-  }
-});
-
-router.delete("/reports/:id", async (req, res) => {
-  const _id = req.params.id;
-  try {
-    let user = await Reports.findById(_id);
-    await cloudinary.uploader.destroy(user.cloudinary_id);
-    await user.remove();
-    res.status(200).json({
-      successMessage: "Programme was successfully removed",
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ errorMessage: "Something went wrong while fetching user" });
-  }
 });
 
 router.post("/archives", async (req, res) => {
