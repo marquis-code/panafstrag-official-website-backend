@@ -599,9 +599,7 @@ router.delete("/meeting/:id", async (req, res) => {
     }).exec();
 
     if (deletedMeeting.deletedCount === 0) {
-      return res
-        .status(404)
-        .json({ errorMessage: `Meeting does not Exist` });
+      return res.status(404).json({ errorMessage: `Meeting does not Exist` });
     } else {
       res.status(200).json({
         successMessage: `Meeting was successfully deleted`,
