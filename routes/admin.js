@@ -289,24 +289,7 @@ router.post("/signin", async (req, res) => {
       const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE,
       });
-      sendOTPVerificationEmail(user, res, accessToken);
-      // console.log(verificationResult, 'verification result hereoo');
-
-      // res.set("authorization", `Bearer ${accessToken}`);
-      // let modifiedUser = {
-      //   firstName: user.firstName,
-      //   lastName: user.lastName,
-      //   email: user.email,
-      //   userId: user._id,
-      // };
-      // await sendOTPVerificationEmail(user, res)
-      //   .then((res) => {
-      //     res.status(200).json({ accessToken, user: { modifiedUser } });
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-      // res.status(200).json({ accessToken, user: { modifiedUser } });
+      sendOTPVerificationEmail(user, res, accessToken)
     }
   } catch (error) {
     return res

@@ -9,6 +9,7 @@ const Responsibilities = require("../models/Responsibilities");
 // const {  } = require("../middleware/authenticator");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
+const Meeting = require("../models/Meeting");
 
 router.post(
   "/board-member",
@@ -516,6 +517,94 @@ router.delete("/responsibilities/:id", async (req, res) => {
     } else {
       res.status(200).json({
         successMessage: `Responsibility With ID was Successfully Deleted`,
+      });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong while fetching user" });
+  }
+});
+
+//Zoom Meetings Endpoints
+
+router.post("/meeting", async (req, res) => {
+  const { title, url, description } = req.body;
+  try {
+    const data = {
+      title,
+      url,
+      description,
+    };
+    const meeting = await Meeting.create(data);
+    meeting.save();
+    res.status(201).json({
+      successMessage: "New meeting was sucessfully saved to database",
+    });
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Sorry!!! Internal server Error" });
+  }
+});
+
+router.get("/meeting", async (req, res) => {
+  try {
+    const allMeetings = await Meeting.find();
+    return res.status(200).json(allMeetings);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
+
+router.get("/meeting/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    let meeting = await Meeting.findById(_id);
+    return res.status(200).json(meeting);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ errorMessage: "Something went wrong, Please try again." });
+  }
+});
+
+router.put("/meeting/:id", (req, res) => {
+  const body = req.body;
+  const id = req.params.id;
+
+  const newMeeting = {
+    title: body.title,
+    url: body.url,
+    description: body.description,
+  };
+  Meeting.findByIdAndUpdate(id, newMeeting, {
+    new: true,
+  })
+    .then(() => {
+      return res
+        .status(200)
+        .json({ successMessage: `Meeting was successfully updated` });
+    })
+    .catch(() => {
+      return res.status(500).json({ errorMessage: "Something went wrong" });
+    });
+});
+
+router.delete("/meeting/:id", async (req, res) => {
+  const _id = req.params.id;
+  try {
+    const deletedMeeting = await Meeting.deleteOne({
+      _id,
+    }).exec();
+
+    if (deletedMeeting.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ errorMessage: `Meeting does not Exist` });
+    } else {
+      res.status(200).json({
+        successMessage: `Meeting was successfully deleted`,
       });
     }
   } catch (error) {
