@@ -19,6 +19,9 @@ let ProgrammeSchema = new mongoose.Schema(
     uploadedVideoUrl: {
       type: String,
     },
+    zoomMeetingUrl: {
+      type: String,
+    },
     session_form: {
       type: String,
     },

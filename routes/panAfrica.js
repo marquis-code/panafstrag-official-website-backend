@@ -248,6 +248,7 @@ router.post("/programmes", upload.array("programmes", 12), async (req, res) => {
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     session_form: req.body.session_form,
+    zoomMeetingUrl : req.body.zoomMeetingUrl,
     uploadedVideoUrl: req.body.uploadedVideoUrl,
     cloudinary_id: urls.map((url) => url.id),
     uploadedDocumentFiles: urls.map((url) => url.res),
@@ -311,6 +312,7 @@ router.put("/programmes/:id", upload.array("programmes", 12), (req, res) => {
     status: body.status,
     startDate: body.startDate,
     endDate: body.endDate,
+    zoomMeetingUrl : body.zoomMeetingUrl,
     session_form: body.session_form,
     uploadedVideoUrl: body.uploadedVideoUrl,
   };
