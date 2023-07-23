@@ -428,7 +428,7 @@ router.get("/responsibilities/:id", async (req, res) => {
   }
 });
 
-router.put("/responsibilities/:id", (req, res) => {
+router. ("/responsibilities/:id", (req, res) => {
   const body = req.body;
   const id = req.params.id;
 
