@@ -1,3 +1,4 @@
+const { string } = require("@hapi/joi");
 const mongoose = require("mongoose");
 let ProgrammeSchema = new mongoose.Schema(
   {
@@ -5,6 +6,9 @@ let ProgrammeSchema = new mongoose.Schema(
       type: String,
     },
     theme: {
+      type: String,
+    },
+    programType: {
       type: String,
     },
     startDate: {
@@ -27,6 +31,9 @@ let ProgrammeSchema = new mongoose.Schema(
     },
     cloudinary_id: {
       type: [String],
+    },
+    nestedProgrammes : {
+     type: [Object],
     },
     status: {
       type: String,

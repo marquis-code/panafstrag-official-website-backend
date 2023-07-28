@@ -12,8 +12,6 @@ const AuthToken = require("../models/AuthToken");
 const nodemailer = require("nodemailer");
 const nodemailerMailgunTransport = require("nodemailer-mailgun-transport");
 const hbs = require("nodemailer-express-handlebars");
-const crypto = require("crypto");
-const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 
 const auth = {
