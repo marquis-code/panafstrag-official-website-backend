@@ -1,5 +1,49 @@
-const { string } = require("@hapi/joi");
 const mongoose = require("mongoose");
+
+const nestedProgramSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true
+    },
+    meetingType: {
+      type: String,
+      required: true
+    },
+    uploadedDocumentFiles: {
+      type: [String],
+      default: []
+    },
+    uploadedVideoUrl: {
+      type: String,
+      default: ''
+    },
+    zoomMeetingUrl: {
+      type: String,
+      default: ''
+    },
+    session_form: {
+      type: String,
+      default: ''
+    },
+    meetingType: {
+      type: String,
+      default: "virtual",
+      enum: ["hybrid", "physical", "virtual"],
+    },
+    cloudinary_id: {
+      type: [String],
+      default: []
+    },
+    status: {
+      type: String,
+      default: "completed",
+      enum: ["pending", "active", "completed"],
+    },
+  },
+);
+
+
 let ProgrammeSchema = new mongoose.Schema(
   {
     title: {
@@ -10,6 +54,8 @@ let ProgrammeSchema = new mongoose.Schema(
     },
     programType: {
       type: String,
+      default: "single",
+      enum: ["single", "series"],
     },
     startDate: {
       type: String,
@@ -29,11 +75,20 @@ let ProgrammeSchema = new mongoose.Schema(
     session_form: {
       type: String,
     },
+    meetingType: {
+      type: String,
+      default: "virtual",
+      enum: ["hybrid", "physical", "virtual"],
+    },
     cloudinary_id: {
       type: [String],
     },
-    nestedProgrammes : {
-     type: [Object],
+    nestedProgrammes: {
+      type: [nestedProgramSchema],
+      default: []
+    },
+    duration: {
+      type: String,
     },
     status: {
       type: String,

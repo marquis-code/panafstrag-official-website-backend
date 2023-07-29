@@ -114,7 +114,6 @@ router.put(
         successMessage: `Board Member data was successfully updated`,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ errorMessage: "Something went wrong" });
     }
   }
@@ -230,28 +229,29 @@ const cloudinaryImageUploadMethod = async (file) => {
 };
 
 router.post("/programmes", upload.array("programmes", 12), async (req, res) => {
-  if (!req.files) {
-    return res.status(400).json({ errorMessage: "Please upload an image" });
-  }
   const urls = [];
-  const files = req.files;
-  for (const file of files) {
-    const { path } = file;
-    const newPath = await cloudinaryImageUploadMethod(path);
-    urls.push(newPath);
+  if (req.files) {
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await cloudinaryImageUploadMethod(path);
+      urls.push(newPath);
+    }
   }
-
   const programe = new Programmes({
     title: req.body.title,
     theme: req.body.theme,
-    status: req.body.status,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
-    session_form: req.body.session_form,
-    zoomMeetingUrl : req.body.zoomMeetingUrl,
+    uploadedDocumentFiles: req.files ? urls.map((url) => url.res) : [],
     uploadedVideoUrl: req.body.uploadedVideoUrl,
+    zoomMeetingUrl: req.body.zoomMeetingUrl,
+    session_form: req.body.session_form,
+    meetingType: req.body.meetingType,
     cloudinary_id: urls.map((url) => url.id),
-    uploadedDocumentFiles: urls.map((url) => url.res),
+    duration: req.body.duration,
+    status: req.body.status,
+    programType: req.body.programType
   });
 
   await programe.save();
@@ -260,6 +260,64 @@ router.post("/programmes", upload.array("programmes", 12), async (req, res) => {
     successMessage: "New Programme was sucessfully saved to database",
   });
 });
+
+router.put('/nested-programme/:id', upload.array("programmes", 12), async (req, res) => {
+  const body = req.body;
+  const id = req.params.id;
+
+  let program = await Programmes.findById(id);
+
+  if (!program) {
+    return res.status(404).json({ errorMessage: "Invalid program Id" })
+  }
+
+  if (program.programType !== 'series') {
+    return res.status(404).json({ errorMessage: "Nested program can only be created for series program type" })
+  }
+
+  try {
+    const urls = [];
+
+    if (req.files) {
+      const files = req.files;
+      for (const file of files) {
+        const { path } = file;
+        const newPath = await cloudinaryImageUploadMethod(path);
+        urls.push(newPath);
+      }
+    }
+
+    const data = {
+      title: body.title,
+      meetingType: body.meetingType,
+      uploadedDocumentFiles: req.files ? urls.map((url) => url.res) : [],
+      status: body.status,
+      startDate: body.startDate,
+      endDate: body.endDate,
+      zoomMeetingUrl: body.zoomMeetingUrl,
+      cloudinary_id: urls.map((url) => url.id),
+      session_form: body.session_form,
+      uploadedVideoUrl: body.uploadedVideoUrl,
+    };
+
+    Programmes.findByIdAndUpdate(
+      { _id: id },
+      { $push: { nestedProgrammes: data } },
+      { new: true, upsert: true, safe: true }
+    )
+      .then(() => {
+        return res
+          .status(200)
+          .json({ successMessage: 'New Sub programme has been sucessfully created' });
+      })
+      .catch(() => {
+        return res.status(500).json({ errorMessage: "Something went wrong while saving nested programme!" });
+      });
+  } catch (error) {
+    return res.status(500).json({ errorMessage: "Something went wrong" });
+  }
+
+})
 
 router.get("/programmes", async (req, res) => {
   try {
@@ -296,8 +354,7 @@ router.delete("/programmes/:id", async (req, res) => {
       successMessage: "Programme was successfully removed",
     });
   } catch (error) {
-    console.log(error);
-    res
+    return res
       .status(500)
       .json({ errorMessage: "Something went wrong while fetching user" });
   }
@@ -312,7 +369,7 @@ router.put("/programmes/:id", upload.array("programmes", 12), (req, res) => {
     status: body.status,
     startDate: body.startDate,
     endDate: body.endDate,
-    zoomMeetingUrl : body.zoomMeetingUrl,
+    zoomMeetingUrl: body.zoomMeetingUrl,
     session_form: body.session_form,
     uploadedVideoUrl: body.uploadedVideoUrl,
   };
@@ -428,7 +485,7 @@ router.get("/responsibilities/:id", async (req, res) => {
   }
 });
 
-router. ("/responsibilities/:id", (req, res) => {
+router.put("/responsibilities/:id", (req, res) => {
   const body = req.body;
   const id = req.params.id;
 
